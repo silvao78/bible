@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { bookmarksService } from "@/lib/bookmarks";
+import { onCollectionsReady } from "@/lib/db/collections";
 import { useBibleBooks } from "@/lib/useBible";
 
 import type { Bookmark } from "@/lib/bookmarks";
@@ -34,14 +35,25 @@ export function BookmarksList({
   const [editNote, setEditNote] = useState("");
   const { data: books } = useBibleBooks();
 
-  const loadBookmarks = useCallback(async () => {
+  const loadBookmarks = useCallback(() => {
     try {
-      const data = await bookmarksService.getBookmarks();
+      const data = bookmarksService.getBookmarks();
       setBookmarks(data);
     } catch (error) {
       console.error("Failed to load bookmarks:", error);
     }
   }, []);
+
+  // Load bookmarks on mount and when sheet opens
+  useEffect(() => {
+    loadBookmarks();
+
+    // Re-load when collections become ready (handles initial page load race)
+    const unsubscribe = onCollectionsReady(() => {
+      loadBookmarks();
+    });
+    return unsubscribe;
+  }, [loadBookmarks]);
 
   useEffect(() => {
     if (open) {

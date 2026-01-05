@@ -1,7 +1,5 @@
-import { createCollection } from "@tanstack/db";
-import { queryCollectionOptions } from "@tanstack/query-db-collection";
+import { createCollection, localStorageCollectionOptions } from "@tanstack/db";
 
-import type { QueryClient } from "@tanstack/react-query";
 import type { BibleVerse } from "@/types/bible";
 import type { Bookmark } from "@/types/bookmarks";
 
@@ -53,121 +51,37 @@ export function getUserId(): string {
 }
 
 /**
- * Load data from localStorage.
+ * Create bookmarks collection using localStorage.
  */
-function loadFromStorage<T>(key: string): T[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const stored = localStorage.getItem(key);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) return parsed;
-      return Object.values(parsed);
-    }
-  } catch {
-    // Ignore parse errors
-  }
-  return [];
-}
-
-/**
- * Save data to localStorage.
- */
-function saveToStorage<T>(key: string, items: T[]): void {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(key, JSON.stringify(items));
-  } catch {
-    // Ignore storage errors
-  }
-}
-
-/**
- * Create bookmarks collection.
- */
-export function createBookmarksCollection(queryClient: QueryClient) {
+export function createBookmarksCollection() {
   return createCollection<Bookmark, string>(
-    queryCollectionOptions({
-      id: "bookmarks",
-      queryKey: ["bookmarks"],
-      queryClient,
+    localStorageCollectionOptions({
+      storageKey: BOOKMARKS_KEY,
       getKey: (item) => item.id,
-      queryFn: async () => loadFromStorage<Bookmark>(BOOKMARKS_KEY),
-      onInsert: async ({ collection }) => {
-        const items = Array.from(collection.state.values());
-        saveToStorage(BOOKMARKS_KEY, items);
-        return { refetch: false };
-      },
-      onUpdate: async ({ collection }) => {
-        const items = Array.from(collection.state.values());
-        saveToStorage(BOOKMARKS_KEY, items);
-        return { refetch: false };
-      },
-      onDelete: async ({ collection }) => {
-        const items = Array.from(collection.state.values());
-        saveToStorage(BOOKMARKS_KEY, items);
-        return { refetch: false };
-      },
     }),
   );
 }
 
 /**
- * Create preferences collection.
+ * Create preferences collection using localStorage.
  */
-export function createPreferencesCollection(queryClient: QueryClient) {
+export function createPreferencesCollection() {
   return createCollection<UserPreferences, string>(
-    queryCollectionOptions({
-      id: "preferences",
-      queryKey: ["preferences"],
-      queryClient,
+    localStorageCollectionOptions({
+      storageKey: PREFERENCES_KEY,
       getKey: (item) => item.id,
-      queryFn: async () => loadFromStorage<UserPreferences>(PREFERENCES_KEY),
-      onInsert: async ({ collection }) => {
-        const items = Array.from(collection.state.values());
-        saveToStorage(PREFERENCES_KEY, items);
-        return { refetch: false };
-      },
-      onUpdate: async ({ collection }) => {
-        const items = Array.from(collection.state.values());
-        saveToStorage(PREFERENCES_KEY, items);
-        return { refetch: false };
-      },
-      onDelete: async ({ collection }) => {
-        const items = Array.from(collection.state.values());
-        saveToStorage(PREFERENCES_KEY, items);
-        return { refetch: false };
-      },
     }),
   );
 }
 
 /**
- * Create chapter cache collection.
+ * Create chapter cache collection using localStorage.
  */
-export function createChapterCacheCollection(queryClient: QueryClient) {
+export function createChapterCacheCollection() {
   return createCollection<CachedChapter, string>(
-    queryCollectionOptions({
-      id: "chapter-cache",
-      queryKey: ["chapter-cache"],
-      queryClient,
+    localStorageCollectionOptions({
+      storageKey: CHAPTER_CACHE_KEY,
       getKey: (item) => item.id,
-      queryFn: async () => loadFromStorage<CachedChapter>(CHAPTER_CACHE_KEY),
-      onInsert: async ({ collection }) => {
-        const items = Array.from(collection.state.values());
-        saveToStorage(CHAPTER_CACHE_KEY, items);
-        return { refetch: false };
-      },
-      onUpdate: async ({ collection }) => {
-        const items = Array.from(collection.state.values());
-        saveToStorage(CHAPTER_CACHE_KEY, items);
-        return { refetch: false };
-      },
-      onDelete: async ({ collection }) => {
-        const items = Array.from(collection.state.values());
-        saveToStorage(CHAPTER_CACHE_KEY, items);
-        return { refetch: false };
-      },
     }),
   );
 }
@@ -186,16 +100,50 @@ let bookmarksCollection: BookmarksCollection | null = null;
 let preferencesCollection: PreferencesCollection | null = null;
 let chapterCacheCollection: ChapterCacheCollection | null = null;
 
+// Event listeners for collections ready
+type CollectionsReadyListener = () => void;
+const collectionsReadyListeners: Set<CollectionsReadyListener> = new Set();
+let collectionsReadyFired = false;
+
 /**
- * Initialize all collections with a QueryClient.
+ * Subscribe to be notified when collections are ready.
+ * If collections are already ready, callback fires immediately.
+ */
+export function onCollectionsReady(
+  callback: CollectionsReadyListener,
+): () => void {
+  if (collectionsReadyFired) {
+    callback();
+    return () => {};
+  }
+  collectionsReadyListeners.add(callback);
+  return () => collectionsReadyListeners.delete(callback);
+}
+
+/**
+ * Initialize all collections.
  * Must be called once at app startup.
  */
-export function initializeCollections(queryClient: QueryClient): void {
+export async function initializeCollections(): Promise<void> {
   if (typeof window === "undefined") return;
 
-  bookmarksCollection = createBookmarksCollection(queryClient);
-  preferencesCollection = createPreferencesCollection(queryClient);
-  chapterCacheCollection = createChapterCacheCollection(queryClient);
+  bookmarksCollection = createBookmarksCollection();
+  preferencesCollection = createPreferencesCollection();
+  chapterCacheCollection = createChapterCacheCollection();
+
+  // Preload collections to trigger initial data fetch from localStorage
+  await Promise.all([
+    bookmarksCollection.preload(),
+    preferencesCollection.preload(),
+    chapterCacheCollection.preload(),
+  ]);
+
+  // Notify listeners that collections are ready
+  collectionsReadyFired = true;
+  for (const listener of collectionsReadyListeners) {
+    listener();
+  }
+  collectionsReadyListeners.clear();
 }
 
 /**

@@ -67,7 +67,7 @@ const VerseList = ({
                 </h3>
               )}
               <p
-                className="text-left font-serif text-lg leading-loose"
+                className={`text-left font-serif text-lg leading-loose ${isBookmarked ? "font-semibold" : ""}`}
                 style={{
                   color:
                     holyWordsEnabled && verse.is_holy_words
@@ -81,7 +81,11 @@ const VerseList = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+              className={`h-8 w-8 shrink-0 transition-opacity ${
+                isBookmarked
+                  ? "opacity-100"
+                  : "opacity-40 hover:opacity-100 active:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+              }`}
               onClick={() => onToggleBookmark(verse)}
             >
               <Bookmark

@@ -11,6 +11,7 @@ import {
 } from "@/components/bible";
 import { bibleApi } from "@/lib/bibleApi";
 import { bookmarksService } from "@/lib/bookmarks";
+import { onCollectionsReady } from "@/lib/db/collections";
 import { useHotkeys } from "@/lib/useHotkeys";
 import { userPreferencesService } from "@/lib/userPreferences";
 import {
@@ -154,6 +155,12 @@ function BibleReaderRoute({
       }
     };
     loadBookmarks();
+
+    // Re-load when collections become ready (handles initial page load race)
+    const unsubscribe = onCollectionsReady(() => {
+      loadBookmarks();
+    });
+    return unsubscribe;
   }, [versionId, bookId, chapter, verses]);
 
   const handleToggleBookmark = async (verse: BibleVerse) => {

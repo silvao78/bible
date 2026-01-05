@@ -15,8 +15,9 @@ export const bookmarksService = {
 
     const userId = getUserId();
     const collection = getBookmarksCollection();
+    const allBookmarks = Array.from(collection.state.values());
 
-    return Array.from(collection.state.values())
+    return allBookmarks
       .filter((b) => b.user_id === userId)
       .sort(
         (a, b) =>

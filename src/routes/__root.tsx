@@ -142,10 +142,10 @@ function RootDocument({ children }: PropsWithChildren) {
   // Initialize TanStack DB collections
   useEffect(() => {
     if (!collectionsInitialized.current) {
-      initializeCollections(queryClient);
       collectionsInitialized.current = true;
+      initializeCollections();
     }
-  }, [queryClient]);
+  }, []);
 
   // Register service worker on client
   useEffect(() => {
