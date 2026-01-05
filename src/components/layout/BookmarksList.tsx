@@ -115,7 +115,7 @@ export function BookmarksList({
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="flex w-full flex-col sm:max-w-lg">
+      <SheetContent side="right" className="flex w-full flex-col sm:max-w-md">
         <SheetHeader className="shrink-0">
           <SheetTitle className="flex items-center gap-2 font-serif">
             <BookmarkIcon className="h-5 w-5" />

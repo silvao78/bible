@@ -129,7 +129,7 @@ const SettingsSheet = ({
           <Settings className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col bg-card px-0!">
+      <SheetContent className="flex w-full flex-col bg-card px-0! sm:max-w-md">
         <SheetHeader className="shrink-0 px-6">
           <SheetTitle className="font-serif">Settings</SheetTitle>
           <SheetDescription>
