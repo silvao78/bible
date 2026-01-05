@@ -53,6 +53,7 @@ function BibleReaderRoute({
   );
   const [holyWordsEnabled, setHolyWordsEnabled] = useState(true);
   const [holyWordsColor, setHolyWordsColor] = useState("#dc2626");
+  const [footerVerseEnabled, setFooterVerseEnabled] = useState(true);
   const [bookmarkedVerses, setBookmarkedVerses] = useState<Set<string>>(
     new Set(),
   );
@@ -73,6 +74,7 @@ function BibleReaderRoute({
       const preferences = await userPreferencesService.getPreferences();
       setHolyWordsEnabled(preferences.holyWordsEnabled);
       setHolyWordsColor(preferences.holyWordsColor);
+      setFooterVerseEnabled(preferences.footerVerseEnabled ?? true);
     };
     loadPreferences();
   }, []);
@@ -132,8 +134,16 @@ function BibleReaderRoute({
       selectedChapter: chapter,
       holyWordsEnabled,
       holyWordsColor,
+      footerVerseEnabled,
     });
-  }, [versionId, bookId, chapter, holyWordsEnabled, holyWordsColor]);
+  }, [
+    versionId,
+    bookId,
+    chapter,
+    holyWordsEnabled,
+    holyWordsColor,
+    footerVerseEnabled,
+  ]);
 
   // Load bookmarks for current chapter
   useEffect(() => {
@@ -410,6 +420,8 @@ function BibleReaderRoute({
             onHolyWordsEnabledChange={setHolyWordsEnabled}
             holyWordsColor={holyWordsColor}
             onHolyWordsColorChange={setHolyWordsColor}
+            footerVerseEnabled={footerVerseEnabled}
+            onFooterVerseEnabledChange={setFooterVerseEnabled}
           />
 
           <ReaderContent
@@ -438,12 +450,14 @@ function BibleReaderRoute({
             scrollContainerRef={scrollContainerRef}
           />
 
-          <PsalmFooter
-            quote={psalmQuote}
-            onNavigate={(navChapter) => {
-              navigateToChapter(versionId, 19, navChapter); // Psalms = book 19
-            }}
-          />
+          {footerVerseEnabled && (
+            <PsalmFooter
+              quote={psalmQuote}
+              onNavigate={(navChapter) => {
+                navigateToChapter(versionId, 19, navChapter); // Psalms = book 19
+              }}
+            />
+          )}
         </div>
       </div>
     </>

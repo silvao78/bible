@@ -19,6 +19,7 @@ const defaultPreferences: UserPreferences = {
   scrollPosition: 0,
   holyWordsEnabled: true,
   holyWordsColor: "#dc2626",
+  footerVerseEnabled: true,
   theme: "system",
   lastUpdated: new Date().toISOString(),
 };

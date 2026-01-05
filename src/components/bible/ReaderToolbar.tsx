@@ -24,6 +24,8 @@ interface ReaderToolbarProps {
   onHolyWordsEnabledChange: (enabled: boolean) => void;
   holyWordsColor: string;
   onHolyWordsColorChange: (color: string) => void;
+  footerVerseEnabled: boolean;
+  onFooterVerseEnabledChange: (enabled: boolean) => void;
 }
 
 /**
@@ -46,6 +48,8 @@ const ReaderToolbar = ({
   onHolyWordsEnabledChange,
   holyWordsColor,
   onHolyWordsColorChange,
+  footerVerseEnabled,
+  onFooterVerseEnabledChange,
 }: ReaderToolbarProps) => (
   <div className="mb-2 flex shrink-0 items-center justify-between gap-2 px-3 sm:mb-4 sm:px-0">
     <button
@@ -104,6 +108,8 @@ const ReaderToolbar = ({
         onHolyWordsEnabledChange={onHolyWordsEnabledChange}
         holyWordsColor={holyWordsColor}
         onHolyWordsColorChange={onHolyWordsColorChange}
+        footerVerseEnabled={footerVerseEnabled}
+        onFooterVerseEnabledChange={onFooterVerseEnabledChange}
       />
     </div>
   </div>

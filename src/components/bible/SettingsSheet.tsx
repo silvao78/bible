@@ -66,6 +66,8 @@ interface SettingsSheetProps {
   onHolyWordsEnabledChange: (enabled: boolean) => void;
   holyWordsColor: string;
   onHolyWordsColorChange: (color: string) => void;
+  footerVerseEnabled: boolean;
+  onFooterVerseEnabledChange: (enabled: boolean) => void;
 }
 
 /**
@@ -81,6 +83,8 @@ const SettingsSheet = ({
   onHolyWordsEnabledChange,
   holyWordsColor,
   onHolyWordsColorChange,
+  footerVerseEnabled,
+  onFooterVerseEnabledChange,
 }: SettingsSheetProps) => {
   const { palette, mode, setPalette, setMode, customColor, setCustomColor } =
     useTheme();
@@ -311,6 +315,29 @@ const SettingsSheet = ({
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+
+          <div className="border-border border-t pt-4">
+            <div className="space-y-2">
+              <span className="font-semibold text-foreground text-sm">
+                Footer Verse
+              </span>
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id="footer-verse"
+                  checked={footerVerseEnabled}
+                  onCheckedChange={(checked) =>
+                    onFooterVerseEnabledChange(checked === true)
+                  }
+                />
+                <label
+                  htmlFor="footer-verse"
+                  className="cursor-pointer text-muted-foreground text-sm"
+                >
+                  Show random Psalm verse in footer
+                </label>
+              </div>
             </div>
           </div>
 

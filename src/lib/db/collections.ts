@@ -20,6 +20,7 @@ export interface UserPreferences {
   scrollPosition: number;
   holyWordsEnabled: boolean;
   holyWordsColor: string;
+  footerVerseEnabled: boolean;
   theme: "light" | "dark" | "system";
   lastUpdated: string;
 }
