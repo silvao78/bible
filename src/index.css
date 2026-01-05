@@ -1,0 +1,211 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --font-serif: "Crimson Pro", Georgia, "Times New Roman", serif;
+  /* Sage (default light) - warm neutral with subtle sage accent */
+  --color-background: hsl(40 20% 98%);
+  --color-foreground: hsl(220 15% 20%);
+  --color-card: hsl(40 15% 99%);
+  --color-card-foreground: hsl(220 15% 20%);
+  --color-popover: hsl(40 15% 99%);
+  --color-popover-foreground: hsl(220 15% 20%);
+  --color-primary: hsl(160 25% 35%);
+  --color-primary-foreground: hsl(40 20% 98%);
+  --color-secondary: hsl(40 15% 93%);
+  --color-secondary-foreground: hsl(220 15% 25%);
+  --color-muted: hsl(40 12% 92%);
+  --color-muted-foreground: hsl(220 10% 45%);
+  --color-accent: hsl(160 20% 90%);
+  --color-accent-foreground: hsl(160 25% 30%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(40 15% 88%);
+  --color-input: hsl(40 15% 88%);
+  --color-ring: hsl(160 25% 35%);
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    color-scheme: light;
+  }
+  html.slate,
+  html.canyon,
+  html.mesa,
+  html.chaparral {
+    color-scheme: dark;
+  }
+  html,
+  body,
+  #root {
+    @apply h-full overflow-hidden;
+  }
+  body {
+    @apply bg-background font-serif text-foreground;
+  }
+}
+
+/* Slate - deep slate with sage accent (original dark) */
+.slate {
+  --color-background: hsl(220 20% 10%);
+  --color-foreground: hsl(40 15% 92%);
+  --color-card: hsl(220 18% 13%);
+  --color-card-foreground: hsl(40 15% 92%);
+  --color-popover: hsl(220 18% 15%);
+  --color-popover-foreground: hsl(40 15% 92%);
+  --color-primary: hsl(160 30% 45%);
+  --color-primary-foreground: hsl(220 20% 10%);
+  --color-secondary: hsl(220 15% 18%);
+  --color-secondary-foreground: hsl(40 15% 90%);
+  --color-muted: hsl(220 15% 16%);
+  --color-muted-foreground: hsl(40 10% 60%);
+  --color-accent: hsl(160 20% 20%);
+  --color-accent-foreground: hsl(160 30% 70%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(220 15% 20%);
+  --color-input: hsl(220 15% 20%);
+  --color-ring: hsl(160 30% 45%);
+}
+
+/* Saguaro - high desert warm sand with cactus green */
+.saguaro {
+  --color-background: hsl(35 30% 96%);
+  --color-foreground: hsl(30 20% 18%);
+  --color-card: hsl(35 25% 98%);
+  --color-card-foreground: hsl(30 20% 18%);
+  --color-popover: hsl(35 25% 98%);
+  --color-popover-foreground: hsl(30 20% 18%);
+  --color-primary: hsl(145 35% 32%);
+  --color-primary-foreground: hsl(35 30% 96%);
+  --color-secondary: hsl(35 20% 90%);
+  --color-secondary-foreground: hsl(30 20% 22%);
+  --color-muted: hsl(35 18% 88%);
+  --color-muted-foreground: hsl(30 15% 40%);
+  --color-accent: hsl(145 25% 88%);
+  --color-accent-foreground: hsl(145 35% 28%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(35 20% 85%);
+  --color-input: hsl(35 20% 85%);
+  --color-ring: hsl(145 35% 32%);
+}
+
+/* Canyon - high desert terracotta and sandstone (dark) */
+.canyon {
+  --color-background: hsl(20 25% 12%);
+  --color-foreground: hsl(30 20% 90%);
+  --color-card: hsl(20 22% 15%);
+  --color-card-foreground: hsl(30 20% 90%);
+  --color-popover: hsl(20 22% 17%);
+  --color-popover-foreground: hsl(30 20% 90%);
+  --color-primary: hsl(15 55% 55%);
+  --color-primary-foreground: hsl(20 25% 12%);
+  --color-secondary: hsl(20 18% 20%);
+  --color-secondary-foreground: hsl(30 18% 88%);
+  --color-muted: hsl(20 15% 18%);
+  --color-muted-foreground: hsl(30 12% 58%);
+  --color-accent: hsl(15 30% 25%);
+  --color-accent-foreground: hsl(15 50% 70%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(20 18% 22%);
+  --color-input: hsl(20 18% 22%);
+  --color-ring: hsl(15 55% 55%);
+}
+
+/* Pinyon - forest greens and earth tones */
+.pinyon {
+  --color-background: hsl(80 15% 96%);
+  --color-foreground: hsl(90 20% 15%);
+  --color-card: hsl(80 12% 98%);
+  --color-card-foreground: hsl(90 20% 15%);
+  --color-popover: hsl(80 12% 98%);
+  --color-popover-foreground: hsl(90 20% 15%);
+  --color-primary: hsl(140 30% 30%);
+  --color-primary-foreground: hsl(80 15% 96%);
+  --color-secondary: hsl(80 12% 90%);
+  --color-secondary-foreground: hsl(90 18% 20%);
+  --color-muted: hsl(80 10% 88%);
+  --color-muted-foreground: hsl(90 12% 40%);
+  --color-accent: hsl(140 20% 88%);
+  --color-accent-foreground: hsl(140 30% 25%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(80 12% 85%);
+  --color-input: hsl(80 12% 85%);
+  --color-ring: hsl(140 30% 30%);
+}
+
+/* Mesa - high desert sunset warm oranges and purples (dark) */
+.mesa {
+  --color-background: hsl(280 20% 10%);
+  --color-foreground: hsl(35 25% 90%);
+  --color-card: hsl(280 18% 13%);
+  --color-card-foreground: hsl(35 25% 90%);
+  --color-popover: hsl(280 18% 15%);
+  --color-popover-foreground: hsl(35 25% 90%);
+  --color-primary: hsl(25 70% 55%);
+  --color-primary-foreground: hsl(280 20% 10%);
+  --color-secondary: hsl(280 15% 18%);
+  --color-secondary-foreground: hsl(35 22% 88%);
+  --color-muted: hsl(280 12% 16%);
+  --color-muted-foreground: hsl(35 15% 58%);
+  --color-accent: hsl(25 40% 22%);
+  --color-accent-foreground: hsl(25 65% 70%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(280 15% 20%);
+  --color-input: hsl(280 15% 20%);
+  --color-ring: hsl(25 70% 55%);
+}
+
+/* Juniper - muted blue-greens and stone */
+.juniper {
+  --color-background: hsl(180 12% 96%);
+  --color-foreground: hsl(200 15% 18%);
+  --color-card: hsl(180 10% 98%);
+  --color-card-foreground: hsl(200 15% 18%);
+  --color-popover: hsl(180 10% 98%);
+  --color-popover-foreground: hsl(200 15% 18%);
+  --color-primary: hsl(175 35% 35%);
+  --color-primary-foreground: hsl(180 12% 96%);
+  --color-secondary: hsl(180 10% 90%);
+  --color-secondary-foreground: hsl(200 12% 22%);
+  --color-muted: hsl(180 8% 88%);
+  --color-muted-foreground: hsl(200 10% 42%);
+  --color-accent: hsl(175 22% 88%);
+  --color-accent-foreground: hsl(175 35% 30%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(180 10% 85%);
+  --color-input: hsl(180 10% 85%);
+  --color-ring: hsl(175 35% 35%);
+}
+
+/* Chaparral - golden browns and olive (dark) */
+.chaparral {
+  --color-background: hsl(45 20% 10%);
+  --color-foreground: hsl(45 18% 88%);
+  --color-card: hsl(45 18% 13%);
+  --color-card-foreground: hsl(45 18% 88%);
+  --color-popover: hsl(45 18% 15%);
+  --color-popover-foreground: hsl(45 18% 88%);
+  --color-primary: hsl(80 35% 45%);
+  --color-primary-foreground: hsl(45 20% 10%);
+  --color-secondary: hsl(45 15% 18%);
+  --color-secondary-foreground: hsl(45 15% 85%);
+  --color-muted: hsl(45 12% 16%);
+  --color-muted-foreground: hsl(45 10% 55%);
+  --color-accent: hsl(80 25% 20%);
+  --color-accent-foreground: hsl(80 35% 65%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(45 15% 20%);
+  --color-input: hsl(45 15% 20%);
+  --color-ring: hsl(80 35% 45%);
+}
