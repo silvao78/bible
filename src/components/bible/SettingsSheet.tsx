@@ -82,7 +82,8 @@ const SettingsSheet = ({
   holyWordsColor,
   onHolyWordsColorChange,
 }: SettingsSheetProps) => {
-  const { palette, setPalette, customColor, setCustomColor } = useTheme();
+  const { palette, mode, setPalette, setMode, customColor, setCustomColor } =
+    useTheme();
   const [localCustomColor, setLocalCustomColor] = useState(
     customColor || "#3d7a5c",
   );
@@ -329,8 +330,9 @@ const SettingsSheet = ({
                   className="flex-1 gap-2"
                   onClick={async () => {
                     try {
+                      const theme = { palette, mode, customColor };
                       const json =
-                        await userPreferencesService.exportPreferences();
+                        userPreferencesService.exportPreferences(theme);
                       const blob = new Blob([json], {
                         type: "application/json",
                       });
@@ -364,10 +366,25 @@ const SettingsSheet = ({
                       if (file) {
                         try {
                           const text = await file.text();
-                          await userPreferencesService.importPreferences(text);
-                          toast.success(
-                            "Settings imported successfully. Reloading...",
-                          );
+                          const result =
+                            userPreferencesService.importPreferences(text);
+
+                          // Apply theme if present
+                          if (result.hasTheme && result.theme) {
+                            setPalette(result.theme.palette);
+                            setMode(result.theme.mode);
+                            if (result.theme.customColor) {
+                              setCustomColor(result.theme.customColor);
+                            }
+                          }
+
+                          const messages = ["Settings imported successfully"];
+                          if (result.bookmarksImported > 0) {
+                            messages.push(
+                              `${result.bookmarksImported} bookmarks added`,
+                            );
+                          }
+                          toast.success(`${messages.join(". ")}. Reloading...`);
                           setTimeout(() => window.location.reload(), 1000);
                         } catch {
                           toast.error(

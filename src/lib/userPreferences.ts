@@ -1,9 +1,11 @@
+import { bookmarksService } from "@/lib/bookmarks";
 import {
   areCollectionsInitialized,
   getPreferencesCollection,
 } from "@/lib/db/collections";
 
 import type { UserPreferences } from "@/lib/db/collections";
+import type { ThemeState } from "@/server/functions/theme";
 
 export type { UserPreferences };
 
@@ -65,19 +67,60 @@ export const userPreferencesService = {
     this.savePreferences({ theme });
   },
 
-  exportPreferences(): string {
+  exportPreferences(theme?: ThemeState): string {
     const { id: _, ...prefs } = this.getPreferences();
-    return JSON.stringify(prefs, null, 2);
+    const bookmarks = bookmarksService.getBookmarks();
+
+    const exportData = {
+      preferences: prefs,
+      bookmarks,
+      theme: theme || null,
+      exportedAt: new Date().toISOString(),
+      version: 1,
+    };
+
+    return JSON.stringify(exportData, null, 2);
   },
 
-  importPreferences(jsonString: string): void {
-    if (typeof window === "undefined" || !areCollectionsInitialized()) return;
+  importPreferences(jsonString: string): {
+    bookmarksImported: number;
+    hasTheme: boolean;
+    theme?: ThemeState;
+  } {
+    if (typeof window === "undefined" || !areCollectionsInitialized()) {
+      throw new Error("Cannot import preferences");
+    }
 
     try {
-      const preferences = JSON.parse(jsonString) as Partial<UserPreferences>;
-      this.savePreferences(preferences);
+      const data = JSON.parse(jsonString);
+
+      // Handle new format with version
+      if (data.version === 1) {
+        // Import preferences
+        if (data.preferences) {
+          this.savePreferences(data.preferences as Partial<UserPreferences>);
+        }
+
+        // Import bookmarks
+        let bookmarksImported = 0;
+        if (data.bookmarks && Array.isArray(data.bookmarks)) {
+          bookmarksImported = bookmarksService.importBookmarks(
+            JSON.stringify(data.bookmarks),
+          );
+        }
+
+        return {
+          bookmarksImported,
+          hasTheme: !!data.theme,
+          theme: data.theme as ThemeState | undefined,
+        };
+      }
+
+      // Handle legacy format (just preferences object)
+      this.savePreferences(data as Partial<UserPreferences>);
+      return { bookmarksImported: 0, hasTheme: false };
     } catch {
-      throw new Error("Invalid preferences JSON format");
+      throw new Error("Invalid settings JSON format");
     }
   },
 
