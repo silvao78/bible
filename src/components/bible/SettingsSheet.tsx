@@ -1,14 +1,14 @@
+import { Debouncer } from "@tanstack/pacer";
 import {
   Bookmark,
   Download,
   Github,
   Heart,
   MessageSquare,
-  Palette,
-  Plus,
   Settings,
   Upload,
 } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,6 @@ import type { ColorPalette } from "@/server/functions/theme";
 const COLOR_PRESETS = [
   { name: "Classic Red", value: "#dc2626" },
   { name: "Dark Red", value: "#b91c1c" },
-  { name: "Crimson", value: "#be123c" },
   { name: "Rose", value: "#e11d48" },
   { name: "Orange", value: "#ea580c" },
   { name: "Amber", value: "#d97706" },
@@ -47,15 +46,14 @@ const COLOR_PRESETS = [
   { name: "Blue", value: "#2563eb" },
 ];
 
-// Palette color swatches for visual selection (primary accent color)
 const PALETTE_COLORS: Record<ColorPalette, string> = {
   sage: "#3d7a5c",
-  saguaro: "#3a7a52",
+  ocean: "#2563eb",
   canyon: "#d4694a",
-  pinyon: "#3d7a4d",
+  violet: "#7c3aed",
   mesa: "#e07830",
   juniper: "#3d8a7a",
-  chaparral: "#7a9a4d",
+  rose: "#e11d48",
 };
 
 interface SettingsSheetProps {
@@ -84,7 +82,41 @@ const SettingsSheet = ({
   holyWordsColor,
   onHolyWordsColorChange,
 }: SettingsSheetProps) => {
-  const { palette, setPalette } = useTheme();
+  const { palette, setPalette, customColor, setCustomColor } = useTheme();
+  const [localCustomColor, setLocalCustomColor] = useState(
+    customColor || "#3d7a5c",
+  );
+
+  const debouncedSetCustomColor = useMemo(
+    () => new Debouncer(setCustomColor, { wait: 150 }),
+    [setCustomColor],
+  );
+
+  const handleCustomColorChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const color = e.target.value;
+      setLocalCustomColor(color);
+      debouncedSetCustomColor.maybeExecute(color);
+    },
+    [debouncedSetCustomColor],
+  );
+
+  const [localHolyWordsColor, setLocalHolyWordsColor] =
+    useState(holyWordsColor);
+
+  const debouncedSetHolyWordsColor = useMemo(
+    () => new Debouncer(onHolyWordsColorChange, { wait: 150 }),
+    [onHolyWordsColorChange],
+  );
+
+  const handleHolyWordsColorChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const color = e.target.value;
+      setLocalHolyWordsColor(color);
+      debouncedSetHolyWordsColor.maybeExecute(color);
+    },
+    [debouncedSetHolyWordsColor],
+  );
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -144,8 +176,7 @@ const SettingsSheet = ({
           </div>
 
           <div className="space-y-2">
-            <span className="flex items-center gap-2 font-semibold text-foreground text-sm">
-              <Palette className="h-4 w-4" />
+            <span className="font-semibold text-foreground text-sm">
               Color Theme
             </span>
             <div className="flex flex-wrap gap-2">
@@ -164,16 +195,42 @@ const SettingsSheet = ({
                   title={p.label}
                 />
               ))}
+              <label className="relative cursor-pointer">
+                <input
+                  type="color"
+                  value={localCustomColor}
+                  onChange={handleCustomColorChange}
+                  className="absolute inset-0 h-8 w-8 cursor-pointer opacity-0"
+                />
+                <div
+                  className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-full border-2 border-muted-foreground/50 border-dashed transition-all hover:scale-110 hover:border-foreground",
+                    palette === "custom" &&
+                      "border-foreground ring-2 ring-foreground ring-offset-2 ring-offset-background",
+                  )}
+                  style={{
+                    backgroundColor:
+                      palette === "custom" ? localCustomColor : undefined,
+                  }}
+                  title="Custom color"
+                >
+                  {palette !== "custom" && (
+                    <span
+                      className="h-4 w-4 rounded-full"
+                      style={{
+                        background:
+                          "conic-gradient(red, yellow, lime, aqua, blue, magenta, red)",
+                      }}
+                    />
+                  )}
+                </div>
+              </label>
             </div>
-            <p className="text-muted-foreground text-xs">
-              High desert and nature-inspired palettes.
-            </p>
           </div>
 
           <div className="border-border border-t pt-4">
             <div className="space-y-2">
-              <span className="flex items-center gap-2 font-semibold text-foreground text-sm">
-                <Bookmark className="h-4 w-4" />
+              <span className="font-semibold text-foreground text-sm">
                 Holy Words Highlighting
               </span>
               <div className="flex items-center gap-3">
@@ -199,10 +256,13 @@ const SettingsSheet = ({
                       <button
                         key={preset.value}
                         type="button"
-                        onClick={() => onHolyWordsColorChange(preset.value)}
+                        onClick={() => {
+                          setLocalHolyWordsColor(preset.value);
+                          onHolyWordsColorChange(preset.value);
+                        }}
                         className={cn(
                           "h-8 w-8 cursor-pointer rounded-full border-2 transition-all hover:scale-110",
-                          holyWordsColor === preset.value
+                          localHolyWordsColor === preset.value
                             ? "border-foreground ring-2 ring-foreground ring-offset-2 ring-offset-background"
                             : "border-transparent",
                         )}
@@ -213,30 +273,38 @@ const SettingsSheet = ({
                     <label className="relative cursor-pointer">
                       <input
                         type="color"
-                        value={holyWordsColor}
-                        onChange={(e) => onHolyWordsColorChange(e.target.value)}
+                        value={localHolyWordsColor}
+                        onChange={handleHolyWordsColorChange}
                         className="absolute inset-0 h-8 w-8 cursor-pointer opacity-0"
                       />
                       <div
                         className={cn(
                           "flex h-8 w-8 items-center justify-center rounded-full border-2 border-muted-foreground/50 border-dashed transition-all hover:scale-110 hover:border-foreground",
                           !COLOR_PRESETS.some(
-                            (p) => p.value === holyWordsColor,
+                            (p) => p.value === localHolyWordsColor,
                           ) &&
                             "border-foreground ring-2 ring-foreground ring-offset-2 ring-offset-background",
                         )}
                         style={{
                           backgroundColor: !COLOR_PRESETS.some(
-                            (p) => p.value === holyWordsColor,
+                            (p) => p.value === localHolyWordsColor,
                           )
-                            ? holyWordsColor
+                            ? localHolyWordsColor
                             : undefined,
                         }}
                         title="Custom color"
                       >
                         {COLOR_PRESETS.some(
-                          (p) => p.value === holyWordsColor,
-                        ) && <Plus className="h-4 w-4 text-muted-foreground" />}
+                          (p) => p.value === localHolyWordsColor,
+                        ) && (
+                          <span
+                            className="h-4 w-4 rounded-full"
+                            style={{
+                              background:
+                                "conic-gradient(red, yellow, lime, aqua, blue, magenta, red)",
+                            }}
+                          />
+                        )}
                       </div>
                     </label>
                   </div>

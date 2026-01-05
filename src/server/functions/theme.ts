@@ -1,35 +1,37 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie, setCookie } from "@tanstack/react-start/server";
 
-// Color palettes (base colors)
 export type ColorPalette =
-  | "sage" // Warm neutral with sage accent
-  | "saguaro" // High desert - warm sand with cactus green
-  | "canyon" // High desert - terracotta and sandstone
-  | "pinyon" // Nature - forest greens and earth tones
-  | "mesa" // High desert sunset - warm oranges and purples
-  | "juniper" // Nature - muted blue-greens and stone
-  | "chaparral"; // Nature - golden browns and olive
+  | "sage"
+  | "ocean"
+  | "canyon"
+  | "violet"
+  | "mesa"
+  | "juniper"
+  | "rose"
+  | "custom";
 
 export type Mode = "light" | "dark";
 
 export interface ThemeState {
   palette: ColorPalette;
   mode: Mode;
+  customColor?: string;
 }
 
 export const palettes: { value: ColorPalette; label: string }[] = [
   { value: "sage", label: "Sage" },
-  { value: "saguaro", label: "Saguaro" },
+  { value: "ocean", label: "Ocean" },
   { value: "canyon", label: "Canyon" },
-  { value: "pinyon", label: "Pinyon" },
+  { value: "violet", label: "Violet" },
   { value: "mesa", label: "Mesa" },
   { value: "juniper", label: "Juniper" },
-  { value: "chaparral", label: "Chaparral" },
+  { value: "rose", label: "Rose" },
 ];
 
 const PALETTE_COOKIE = "bible-palette";
 const MODE_COOKIE = "bible-mode";
+const CUSTOM_COLOR_COOKIE = "bible-custom-color";
 
 /**
  * Get the current theme state from cookies.
@@ -37,6 +39,7 @@ const MODE_COOKIE = "bible-mode";
 export const getThemeServerFn = createServerFn().handler(async () => ({
   palette: (getCookie(PALETTE_COOKIE) || "sage") as ColorPalette,
   mode: (getCookie(MODE_COOKIE) || "light") as Mode,
+  customColor: getCookie(CUSTOM_COLOR_COOKIE) || undefined,
 }));
 
 /**
@@ -52,3 +55,10 @@ export const setPaletteServerFn = createServerFn({ method: "POST" })
 export const setModeServerFn = createServerFn({ method: "POST" })
   .inputValidator((data: Mode) => data)
   .handler(async ({ data }) => setCookie(MODE_COOKIE, data));
+
+/**
+ * Set the custom color in cookies.
+ */
+export const setCustomColorServerFn = createServerFn({ method: "POST" })
+  .inputValidator((data: string) => data)
+  .handler(async ({ data }) => setCookie(CUSTOM_COLOR_COOKIE, data));

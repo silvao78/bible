@@ -46,7 +46,6 @@
   }
 }
 
-/* ========== SAGE (default in @theme, dark variant below) ========== */
 .sage.dark {
   --color-background: hsl(220 20% 10%);
   --color-foreground: hsl(40 15% 92%);
@@ -69,52 +68,50 @@
   --color-ring: hsl(160 30% 45%);
 }
 
-/* ========== SAGUARO - high desert warm sand with cactus green ========== */
-.saguaro {
-  --color-background: hsl(35 30% 96%);
-  --color-foreground: hsl(30 20% 18%);
-  --color-card: hsl(35 25% 98%);
-  --color-card-foreground: hsl(30 20% 18%);
-  --color-popover: hsl(35 25% 98%);
-  --color-popover-foreground: hsl(30 20% 18%);
-  --color-primary: hsl(145 35% 32%);
-  --color-primary-foreground: hsl(35 30% 96%);
-  --color-secondary: hsl(35 20% 90%);
-  --color-secondary-foreground: hsl(30 20% 22%);
-  --color-muted: hsl(35 18% 88%);
-  --color-muted-foreground: hsl(30 15% 40%);
-  --color-accent: hsl(145 25% 88%);
-  --color-accent-foreground: hsl(145 35% 28%);
+.ocean {
+  --color-background: hsl(210 25% 97%);
+  --color-foreground: hsl(215 20% 18%);
+  --color-card: hsl(210 20% 99%);
+  --color-card-foreground: hsl(215 20% 18%);
+  --color-popover: hsl(210 20% 99%);
+  --color-popover-foreground: hsl(215 20% 18%);
+  --color-primary: hsl(217 91% 60%);
+  --color-primary-foreground: hsl(210 25% 98%);
+  --color-secondary: hsl(210 18% 92%);
+  --color-secondary-foreground: hsl(215 18% 22%);
+  --color-muted: hsl(210 15% 90%);
+  --color-muted-foreground: hsl(215 12% 42%);
+  --color-accent: hsl(217 50% 90%);
+  --color-accent-foreground: hsl(217 80% 45%);
   --color-destructive: hsl(0 72% 51%);
   --color-destructive-foreground: hsl(0 0% 100%);
-  --color-border: hsl(35 20% 85%);
-  --color-input: hsl(35 20% 85%);
-  --color-ring: hsl(145 35% 32%);
+  --color-border: hsl(210 18% 87%);
+  --color-input: hsl(210 18% 87%);
+  --color-ring: hsl(217 91% 60%);
 }
 
-.saguaro.dark {
-  --color-background: hsl(35 20% 10%);
-  --color-foreground: hsl(35 25% 92%);
-  --color-card: hsl(35 18% 13%);
-  --color-card-foreground: hsl(35 25% 92%);
-  --color-popover: hsl(35 18% 15%);
-  --color-popover-foreground: hsl(35 25% 92%);
-  --color-primary: hsl(145 35% 45%);
-  --color-primary-foreground: hsl(35 20% 10%);
-  --color-secondary: hsl(35 15% 18%);
-  --color-secondary-foreground: hsl(35 20% 90%);
-  --color-muted: hsl(35 12% 16%);
-  --color-muted-foreground: hsl(35 15% 58%);
-  --color-accent: hsl(145 25% 20%);
-  --color-accent-foreground: hsl(145 35% 70%);
+.ocean.dark {
+  --color-background: hsl(215 25% 10%);
+  --color-foreground: hsl(210 20% 92%);
+  --color-card: hsl(215 22% 13%);
+  --color-card-foreground: hsl(210 20% 92%);
+  --color-popover: hsl(215 22% 15%);
+  --color-popover-foreground: hsl(210 20% 92%);
+  --color-primary: hsl(217 91% 65%);
+  --color-primary-foreground: hsl(215 25% 10%);
+  --color-secondary: hsl(215 18% 18%);
+  --color-secondary-foreground: hsl(210 18% 90%);
+  --color-muted: hsl(215 15% 16%);
+  --color-muted-foreground: hsl(210 12% 58%);
+  --color-accent: hsl(217 50% 22%);
+  --color-accent-foreground: hsl(217 80% 72%);
   --color-destructive: hsl(0 72% 51%);
   --color-destructive-foreground: hsl(0 0% 100%);
-  --color-border: hsl(35 15% 20%);
-  --color-input: hsl(35 15% 20%);
-  --color-ring: hsl(145 35% 45%);
+  --color-border: hsl(215 18% 20%);
+  --color-input: hsl(215 18% 20%);
+  --color-ring: hsl(217 91% 65%);
 }
 
-/* ========== CANYON - high desert terracotta and sandstone ========== */
 .canyon {
   --color-background: hsl(25 25% 96%);
   --color-foreground: hsl(20 20% 18%);
@@ -159,52 +156,50 @@
   --color-ring: hsl(15 55% 55%);
 }
 
-/* ========== PINYON - forest greens and earth tones ========== */
-.pinyon {
-  --color-background: hsl(80 15% 96%);
-  --color-foreground: hsl(90 20% 15%);
-  --color-card: hsl(80 12% 98%);
-  --color-card-foreground: hsl(90 20% 15%);
-  --color-popover: hsl(80 12% 98%);
-  --color-popover-foreground: hsl(90 20% 15%);
-  --color-primary: hsl(140 30% 30%);
-  --color-primary-foreground: hsl(80 15% 96%);
-  --color-secondary: hsl(80 12% 90%);
-  --color-secondary-foreground: hsl(90 18% 20%);
-  --color-muted: hsl(80 10% 88%);
-  --color-muted-foreground: hsl(90 12% 40%);
-  --color-accent: hsl(140 20% 88%);
-  --color-accent-foreground: hsl(140 30% 25%);
+.violet {
+  --color-background: hsl(270 20% 97%);
+  --color-foreground: hsl(270 15% 18%);
+  --color-card: hsl(270 18% 99%);
+  --color-card-foreground: hsl(270 15% 18%);
+  --color-popover: hsl(270 18% 99%);
+  --color-popover-foreground: hsl(270 15% 18%);
+  --color-primary: hsl(263 70% 55%);
+  --color-primary-foreground: hsl(270 20% 98%);
+  --color-secondary: hsl(270 15% 92%);
+  --color-secondary-foreground: hsl(270 12% 22%);
+  --color-muted: hsl(270 12% 90%);
+  --color-muted-foreground: hsl(270 10% 42%);
+  --color-accent: hsl(263 40% 90%);
+  --color-accent-foreground: hsl(263 60% 42%);
   --color-destructive: hsl(0 72% 51%);
   --color-destructive-foreground: hsl(0 0% 100%);
-  --color-border: hsl(80 12% 85%);
-  --color-input: hsl(80 12% 85%);
-  --color-ring: hsl(140 30% 30%);
+  --color-border: hsl(270 15% 87%);
+  --color-input: hsl(270 15% 87%);
+  --color-ring: hsl(263 70% 55%);
 }
 
-.pinyon.dark {
-  --color-background: hsl(90 20% 10%);
-  --color-foreground: hsl(80 15% 92%);
-  --color-card: hsl(90 18% 13%);
-  --color-card-foreground: hsl(80 15% 92%);
-  --color-popover: hsl(90 18% 15%);
-  --color-popover-foreground: hsl(80 15% 92%);
-  --color-primary: hsl(140 30% 45%);
-  --color-primary-foreground: hsl(90 20% 10%);
-  --color-secondary: hsl(90 15% 18%);
-  --color-secondary-foreground: hsl(80 12% 90%);
-  --color-muted: hsl(90 12% 16%);
-  --color-muted-foreground: hsl(80 10% 58%);
-  --color-accent: hsl(140 20% 20%);
-  --color-accent-foreground: hsl(140 30% 70%);
+.violet.dark {
+  --color-background: hsl(270 22% 10%);
+  --color-foreground: hsl(270 15% 92%);
+  --color-card: hsl(270 20% 13%);
+  --color-card-foreground: hsl(270 15% 92%);
+  --color-popover: hsl(270 20% 15%);
+  --color-popover-foreground: hsl(270 15% 92%);
+  --color-primary: hsl(263 70% 62%);
+  --color-primary-foreground: hsl(270 22% 10%);
+  --color-secondary: hsl(270 15% 18%);
+  --color-secondary-foreground: hsl(270 12% 90%);
+  --color-muted: hsl(270 12% 16%);
+  --color-muted-foreground: hsl(270 10% 58%);
+  --color-accent: hsl(263 40% 22%);
+  --color-accent-foreground: hsl(263 60% 72%);
   --color-destructive: hsl(0 72% 51%);
   --color-destructive-foreground: hsl(0 0% 100%);
-  --color-border: hsl(90 15% 20%);
-  --color-input: hsl(90 15% 20%);
-  --color-ring: hsl(140 30% 45%);
+  --color-border: hsl(270 15% 20%);
+  --color-input: hsl(270 15% 20%);
+  --color-ring: hsl(263 70% 62%);
 }
 
-/* ========== MESA - high desert sunset warm oranges and purples ========== */
 .mesa {
   --color-background: hsl(35 30% 96%);
   --color-foreground: hsl(280 15% 18%);
@@ -249,7 +244,6 @@
   --color-ring: hsl(25 70% 55%);
 }
 
-/* ========== JUNIPER - muted blue-greens and stone ========== */
 .juniper {
   --color-background: hsl(180 12% 96%);
   --color-foreground: hsl(200 15% 18%);
@@ -294,47 +288,90 @@
   --color-ring: hsl(175 35% 45%);
 }
 
-/* ========== CHAPARRAL - golden browns and olive ========== */
-.chaparral {
-  --color-background: hsl(45 20% 96%);
-  --color-foreground: hsl(45 18% 18%);
-  --color-card: hsl(45 18% 98%);
-  --color-card-foreground: hsl(45 18% 18%);
-  --color-popover: hsl(45 18% 98%);
-  --color-popover-foreground: hsl(45 18% 18%);
-  --color-primary: hsl(80 35% 35%);
-  --color-primary-foreground: hsl(45 20% 96%);
-  --color-secondary: hsl(45 15% 90%);
-  --color-secondary-foreground: hsl(45 15% 22%);
-  --color-muted: hsl(45 12% 88%);
-  --color-muted-foreground: hsl(45 10% 42%);
-  --color-accent: hsl(80 25% 88%);
-  --color-accent-foreground: hsl(80 35% 30%);
+.rose {
+  --color-background: hsl(350 25% 97%);
+  --color-foreground: hsl(350 15% 18%);
+  --color-card: hsl(350 20% 99%);
+  --color-card-foreground: hsl(350 15% 18%);
+  --color-popover: hsl(350 20% 99%);
+  --color-popover-foreground: hsl(350 15% 18%);
+  --color-primary: hsl(347 77% 50%);
+  --color-primary-foreground: hsl(350 25% 98%);
+  --color-secondary: hsl(350 18% 92%);
+  --color-secondary-foreground: hsl(350 12% 22%);
+  --color-muted: hsl(350 15% 90%);
+  --color-muted-foreground: hsl(350 10% 42%);
+  --color-accent: hsl(347 45% 90%);
+  --color-accent-foreground: hsl(347 70% 40%);
   --color-destructive: hsl(0 72% 51%);
   --color-destructive-foreground: hsl(0 0% 100%);
-  --color-border: hsl(45 15% 85%);
-  --color-input: hsl(45 15% 85%);
-  --color-ring: hsl(80 35% 35%);
+  --color-border: hsl(350 18% 87%);
+  --color-input: hsl(350 18% 87%);
+  --color-ring: hsl(347 77% 50%);
 }
 
-.chaparral.dark {
-  --color-background: hsl(45 20% 10%);
-  --color-foreground: hsl(45 18% 88%);
-  --color-card: hsl(45 18% 13%);
-  --color-card-foreground: hsl(45 18% 88%);
-  --color-popover: hsl(45 18% 15%);
-  --color-popover-foreground: hsl(45 18% 88%);
-  --color-primary: hsl(80 35% 45%);
-  --color-primary-foreground: hsl(45 20% 10%);
-  --color-secondary: hsl(45 15% 18%);
-  --color-secondary-foreground: hsl(45 15% 85%);
-  --color-muted: hsl(45 12% 16%);
-  --color-muted-foreground: hsl(45 10% 55%);
-  --color-accent: hsl(80 25% 20%);
-  --color-accent-foreground: hsl(80 35% 65%);
+.rose.dark {
+  --color-background: hsl(350 22% 10%);
+  --color-foreground: hsl(350 18% 92%);
+  --color-card: hsl(350 20% 13%);
+  --color-card-foreground: hsl(350 18% 92%);
+  --color-popover: hsl(350 20% 15%);
+  --color-popover-foreground: hsl(350 18% 92%);
+  --color-primary: hsl(347 77% 55%);
+  --color-primary-foreground: hsl(350 22% 10%);
+  --color-secondary: hsl(350 15% 18%);
+  --color-secondary-foreground: hsl(350 15% 90%);
+  --color-muted: hsl(350 12% 16%);
+  --color-muted-foreground: hsl(350 10% 58%);
+  --color-accent: hsl(347 45% 22%);
+  --color-accent-foreground: hsl(347 70% 72%);
   --color-destructive: hsl(0 72% 51%);
   --color-destructive-foreground: hsl(0 0% 100%);
-  --color-border: hsl(45 15% 20%);
-  --color-input: hsl(45 15% 20%);
-  --color-ring: hsl(80 35% 45%);
+  --color-border: hsl(350 15% 20%);
+  --color-input: hsl(350 15% 20%);
+  --color-ring: hsl(347 77% 55%);
+}
+
+.custom {
+  --color-background: hsl(160 20% 97%);
+  --color-foreground: hsl(160 15% 18%);
+  --color-card: hsl(160 18% 99%);
+  --color-card-foreground: hsl(160 15% 18%);
+  --color-popover: hsl(160 18% 99%);
+  --color-popover-foreground: hsl(160 15% 18%);
+  --color-primary: hsl(160 25% 35%);
+  --color-primary-foreground: hsl(160 20% 98%);
+  --color-secondary: hsl(160 15% 92%);
+  --color-secondary-foreground: hsl(160 12% 22%);
+  --color-muted: hsl(160 12% 90%);
+  --color-muted-foreground: hsl(160 10% 42%);
+  --color-accent: hsl(160 40% 90%);
+  --color-accent-foreground: hsl(160 35% 30%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(160 15% 87%);
+  --color-input: hsl(160 15% 87%);
+  --color-ring: hsl(160 25% 35%);
+}
+
+.custom.dark {
+  --color-background: hsl(160 22% 10%);
+  --color-foreground: hsl(160 15% 92%);
+  --color-card: hsl(160 20% 13%);
+  --color-card-foreground: hsl(160 15% 92%);
+  --color-popover: hsl(160 20% 15%);
+  --color-popover-foreground: hsl(160 15% 92%);
+  --color-primary: hsl(160 25% 45%);
+  --color-primary-foreground: hsl(160 22% 10%);
+  --color-secondary: hsl(160 15% 18%);
+  --color-secondary-foreground: hsl(160 12% 90%);
+  --color-muted: hsl(160 12% 16%);
+  --color-muted-foreground: hsl(160 10% 58%);
+  --color-accent: hsl(160 40% 22%);
+  --color-accent-foreground: hsl(160 35% 72%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(160 15% 20%);
+  --color-input: hsl(160 15% 20%);
+  --color-ring: hsl(160 25% 45%);
 }
