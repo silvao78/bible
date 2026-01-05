@@ -1,5 +1,4 @@
-import { useRouter } from "@tanstack/react-router";
-import { createContext, use } from "react";
+import { createContext, use, useCallback, useState } from "react";
 
 import {
   palettes,
@@ -21,27 +20,58 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 /**
+ * Build the class string for the html element.
+ */
+const buildThemeClass = (palette: ColorPalette, mode: Mode) =>
+  `${palette}${mode === "dark" ? " dark" : ""}`;
+
+/**
  * Global theme provider.
  */
 const ThemeProvider = ({
   children,
-  theme,
+  theme: initialTheme,
 }: PropsWithChildren<{ theme: ThemeState }>) => {
-  const router = useRouter();
+  const [palette, setPaletteState] = useState<ColorPalette>(
+    initialTheme.palette,
+  );
+  const [mode, setModeState] = useState<Mode>(initialTheme.mode);
 
-  const setPalette = (val: ColorPalette) =>
-    setPaletteServerFn({ data: val }).then(() => router.invalidate());
+  const setPalette = useCallback(
+    (val: ColorPalette) => {
+      // Update DOM immediately for instant visual feedback
+      document.documentElement.className = buildThemeClass(val, mode);
 
-  const setMode = (val: Mode) =>
-    setModeServerFn({ data: val }).then(() => router.invalidate());
+      setPaletteState(val);
 
-  const toggleMode = () => setMode(theme.mode === "light" ? "dark" : "light");
+      // Persist to server in background (non-blocking)
+      setPaletteServerFn({ data: val });
+    },
+    [mode],
+  );
+
+  const setMode = useCallback(
+    (val: Mode) => {
+      // Update DOM immediately for instant visual feedback
+      document.documentElement.className = buildThemeClass(palette, val);
+
+      setModeState(val);
+
+      // Persist to server in background (non-blocking)
+      setModeServerFn({ data: val });
+    },
+    [palette],
+  );
+
+  const toggleMode = useCallback(() => {
+    setMode(mode === "light" ? "dark" : "light");
+  }, [mode, setMode]);
 
   return (
     <ThemeContext
       value={{
-        palette: theme.palette,
-        mode: theme.mode,
+        palette,
+        mode,
         setPalette,
         setMode,
         toggleMode,
