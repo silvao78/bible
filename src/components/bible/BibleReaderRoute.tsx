@@ -51,9 +51,17 @@ function BibleReaderRoute({
   const { data: verses } = useSuspenseQuery(
     chapterOptions(versionId, bookId, chapter),
   );
-  const [holyWordsEnabled, setHolyWordsEnabled] = useState(true);
-  const [holyWordsColor, setHolyWordsColor] = useState("#dc2626");
-  const [footerVerseEnabled, setFooterVerseEnabled] = useState(true);
+  const { footerVerseEnabled } = useTheme();
+  const initialPrefs = useMemo(
+    () => userPreferencesService.getPreferences(),
+    [],
+  );
+  const [holyWordsEnabled, setHolyWordsEnabled] = useState(
+    initialPrefs.holyWordsEnabled,
+  );
+  const [holyWordsColor, setHolyWordsColor] = useState(
+    initialPrefs.holyWordsColor,
+  );
   const [bookmarkedVerses, setBookmarkedVerses] = useState<Set<string>>(
     new Set(),
   );
@@ -68,15 +76,18 @@ function BibleReaderRoute({
     (v: BibleVersion) => v.id === versionId,
   );
 
-  // Load preferences on mount
+  // Reload preferences when collections become ready
   useEffect(() => {
-    const loadPreferences = async () => {
-      const preferences = await userPreferencesService.getPreferences();
+    const loadPreferences = () => {
+      const preferences = userPreferencesService.getPreferences();
       setHolyWordsEnabled(preferences.holyWordsEnabled);
       setHolyWordsColor(preferences.holyWordsColor);
-      setFooterVerseEnabled(preferences.footerVerseEnabled ?? true);
     };
-    loadPreferences();
+
+    const unsubscribe = onCollectionsReady(() => {
+      loadPreferences();
+    });
+    return unsubscribe;
   }, []);
 
   // Preload adjacent chapters for faster navigation
@@ -134,16 +145,8 @@ function BibleReaderRoute({
       selectedChapter: chapter,
       holyWordsEnabled,
       holyWordsColor,
-      footerVerseEnabled,
     });
-  }, [
-    versionId,
-    bookId,
-    chapter,
-    holyWordsEnabled,
-    holyWordsColor,
-    footerVerseEnabled,
-  ]);
+  }, [versionId, bookId, chapter, holyWordsEnabled, holyWordsColor]);
 
   // Load bookmarks for current chapter
   useEffect(() => {
@@ -395,7 +398,9 @@ function BibleReaderRoute({
         onNextChapter={handleNextChapter}
         onToggleBookmark={handleToggleBookmark}
       />
-      <div className="flex h-full flex-col bg-background px-0 py-3 sm:p-4 md:p-6">
+      <div
+        className={`flex h-full flex-col bg-background px-0 pt-3 sm:p-4 md:p-6 ${footerVerseEnabled ? "pb-3 sm:pb-4 md:pb-6" : "pb-0"}`}
+      >
         <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden">
           <ReaderToolbar
             onGoHome={goHome}
@@ -420,8 +425,6 @@ function BibleReaderRoute({
             onHolyWordsEnabledChange={setHolyWordsEnabled}
             holyWordsColor={holyWordsColor}
             onHolyWordsColorChange={setHolyWordsColor}
-            footerVerseEnabled={footerVerseEnabled}
-            onFooterVerseEnabledChange={setFooterVerseEnabled}
           />
 
           <ReaderContent

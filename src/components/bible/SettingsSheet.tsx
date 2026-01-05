@@ -66,8 +66,6 @@ interface SettingsSheetProps {
   onHolyWordsEnabledChange: (enabled: boolean) => void;
   holyWordsColor: string;
   onHolyWordsColorChange: (color: string) => void;
-  footerVerseEnabled: boolean;
-  onFooterVerseEnabledChange: (enabled: boolean) => void;
 }
 
 /**
@@ -83,11 +81,17 @@ const SettingsSheet = ({
   onHolyWordsEnabledChange,
   holyWordsColor,
   onHolyWordsColorChange,
-  footerVerseEnabled,
-  onFooterVerseEnabledChange,
 }: SettingsSheetProps) => {
-  const { palette, mode, setPalette, setMode, customColor, setCustomColor } =
-    useTheme();
+  const {
+    palette,
+    mode,
+    setPalette,
+    setMode,
+    customColor,
+    setCustomColor,
+    footerVerseEnabled,
+    setFooterVerseEnabled,
+  } = useTheme();
   const [localCustomColor, setLocalCustomColor] = useState(
     customColor || "#3d7a5c",
   );
@@ -328,7 +332,7 @@ const SettingsSheet = ({
                   id="footer-verse"
                   checked={footerVerseEnabled}
                   onCheckedChange={(checked) =>
-                    onFooterVerseEnabledChange(checked === true)
+                    setFooterVerseEnabled(checked === true)
                   }
                 />
                 <label
@@ -357,7 +361,12 @@ const SettingsSheet = ({
                   className="flex-1 gap-2"
                   onClick={async () => {
                     try {
-                      const theme = { palette, mode, customColor };
+                      const theme = {
+                        palette,
+                        mode,
+                        customColor,
+                        footerVerseEnabled,
+                      };
                       const json =
                         userPreferencesService.exportPreferences(theme);
                       const blob = new Blob([json], {
@@ -402,6 +411,11 @@ const SettingsSheet = ({
                             setMode(result.theme.mode);
                             if (result.theme.customColor) {
                               setCustomColor(result.theme.customColor);
+                            }
+                            if (result.theme.footerVerseEnabled !== undefined) {
+                              setFooterVerseEnabled(
+                                result.theme.footerVerseEnabled,
+                              );
                             }
                           }
 

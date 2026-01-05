@@ -17,6 +17,7 @@ export interface ThemeState {
   palette: ColorPalette;
   mode: Mode;
   customColor?: string;
+  footerVerseEnabled: boolean;
 }
 
 export const palettes: { value: ColorPalette; label: string }[] = [
@@ -32,6 +33,7 @@ export const palettes: { value: ColorPalette; label: string }[] = [
 const PALETTE_COOKIE = "bible-palette";
 const MODE_COOKIE = "bible-mode";
 const CUSTOM_COLOR_COOKIE = "bible-custom-color";
+const FOOTER_VERSE_COOKIE = "bible-footer-verse";
 
 /**
  * Get the current theme state from cookies.
@@ -40,6 +42,7 @@ export const getThemeServerFn = createServerFn().handler(async () => ({
   palette: (getCookie(PALETTE_COOKIE) || "sage") as ColorPalette,
   mode: (getCookie(MODE_COOKIE) || "light") as Mode,
   customColor: getCookie(CUSTOM_COLOR_COOKIE) || undefined,
+  footerVerseEnabled: getCookie(FOOTER_VERSE_COOKIE) !== "false",
 }));
 
 /**
@@ -62,3 +65,10 @@ export const setModeServerFn = createServerFn({ method: "POST" })
 export const setCustomColorServerFn = createServerFn({ method: "POST" })
   .inputValidator((data: string) => data)
   .handler(async ({ data }) => setCookie(CUSTOM_COLOR_COOKIE, data));
+
+/**
+ * Set the footer verse enabled state in cookies.
+ */
+export const setFooterVerseEnabledServerFn = createServerFn({ method: "POST" })
+  .inputValidator((data: boolean) => data)
+  .handler(async ({ data }) => setCookie(FOOTER_VERSE_COOKIE, String(data)));

@@ -3,6 +3,7 @@ import { createContext, use, useCallback, useEffect, useState } from "react";
 import {
   palettes,
   setCustomColorServerFn,
+  setFooterVerseEnabledServerFn,
   setModeServerFn,
   setPaletteServerFn,
 } from "@/server/functions/theme";
@@ -14,9 +15,11 @@ interface ThemeContextValue {
   palette: ColorPalette;
   mode: Mode;
   customColor: string | undefined;
+  footerVerseEnabled: boolean;
   setPalette: (val: ColorPalette) => void;
   setMode: (val: Mode) => void;
   setCustomColor: (val: string) => void;
+  setFooterVerseEnabled: (val: boolean) => void;
   toggleMode: () => void;
 }
 
@@ -154,6 +157,9 @@ const ThemeProvider = ({
   const [customColor, setCustomColorState] = useState<string | undefined>(
     initialTheme.customColor,
   );
+  const [footerVerseEnabled, setFooterVerseEnabledState] = useState<boolean>(
+    initialTheme.footerVerseEnabled,
+  );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only run on mount - initialTheme doesn't change after SSR hydration
   useEffect(() => {
@@ -202,15 +208,22 @@ const ThemeProvider = ({
     setMode(mode === "light" ? "dark" : "light");
   }, [mode, setMode]);
 
+  const setFooterVerseEnabled = useCallback((val: boolean) => {
+    setFooterVerseEnabledState(val);
+    setFooterVerseEnabledServerFn({ data: val });
+  }, []);
+
   return (
     <ThemeContext
       value={{
         palette,
         mode,
         customColor,
+        footerVerseEnabled,
         setPalette,
         setMode,
         setCustomColor,
+        setFooterVerseEnabled,
         toggleMode,
       }}
     >
