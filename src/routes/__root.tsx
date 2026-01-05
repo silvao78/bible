@@ -38,6 +38,25 @@ export const Route = createRootRouteWithContext<{
       { name: "apple-mobile-web-app-status-bar-style", content: "default" },
       { name: "apple-mobile-web-app-title", content: "Bible" },
       { name: "msapplication-TileColor", content: "#1e293b" },
+      // Open Graph
+      { property: "og:type", content: "website" },
+      { property: "og:title", content: "Holy Bible" },
+      {
+        property: "og:description",
+        content: "A local-first Bible reader PWA with offline support",
+      },
+      { property: "og:url", content: "https://bible.brian.software" },
+      { property: "og:image", content: "https://bible.brian.software/og.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      // Twitter
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Holy Bible" },
+      {
+        name: "twitter:description",
+        content: "A local-first Bible reader PWA with offline support",
+      },
+      { name: "twitter:image", content: "https://bible.brian.software/og.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
