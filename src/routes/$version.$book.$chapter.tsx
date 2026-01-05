@@ -49,6 +49,27 @@ export const Route = createFileRoute("/$version/$book/$chapter")({
 
     return { versions, books, verses, versionId, bookId, chapter };
   },
+  head: ({ loaderData }) => {
+    const version = loaderData?.versions?.find(
+      (v) => v.id === loaderData?.versionId,
+    );
+    const book = loaderData?.books?.find((b) => b.id === loaderData?.bookId);
+    const chapter = loaderData?.chapter;
+
+    const versionCode = version?.code ?? "KJV";
+    const bookName = book?.name ?? "Genesis";
+    const chapterNum = chapter ?? 1;
+
+    const title = `${bookName} ${chapterNum} ${versionCode} | Holy Bible`;
+
+    return {
+      meta: [
+        { title },
+        { property: "og:title", content: title },
+        { name: "twitter:title", content: title },
+      ],
+    };
+  },
   pendingComponent: LoadingSkeleton,
   component: BibleReaderWrapper,
 });
