@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie, setCookie } from "@tanstack/react-start/server";
 
-export type Theme =
-  | "sage" // Current light theme - warm neutral with sage accent
-  | "slate" // Current dark theme - deep slate with sage accent
+// Color palettes (base colors)
+export type ColorPalette =
+  | "sage" // Warm neutral with sage accent
   | "saguaro" // High desert - warm sand with cactus green
   | "canyon" // High desert - terracotta and sandstone
   | "pinyon" // Nature - forest greens and earth tones
@@ -11,29 +11,44 @@ export type Theme =
   | "juniper" // Nature - muted blue-greens and stone
   | "chaparral"; // Nature - golden browns and olive
 
-export const themes: { value: Theme; label: string; isDark: boolean }[] = [
-  { value: "sage", label: "Sage", isDark: false },
-  { value: "slate", label: "Slate", isDark: true },
-  { value: "saguaro", label: "Saguaro", isDark: false },
-  { value: "canyon", label: "Canyon", isDark: true },
-  { value: "pinyon", label: "Pinyon", isDark: false },
-  { value: "mesa", label: "Mesa", isDark: true },
-  { value: "juniper", label: "Juniper", isDark: false },
-  { value: "chaparral", label: "Chaparral", isDark: true },
+export type Mode = "light" | "dark";
+
+export interface ThemeState {
+  palette: ColorPalette;
+  mode: Mode;
+}
+
+export const palettes: { value: ColorPalette; label: string }[] = [
+  { value: "sage", label: "Sage" },
+  { value: "saguaro", label: "Saguaro" },
+  { value: "canyon", label: "Canyon" },
+  { value: "pinyon", label: "Pinyon" },
+  { value: "mesa", label: "Mesa" },
+  { value: "juniper", label: "Juniper" },
+  { value: "chaparral", label: "Chaparral" },
 ];
 
-const THEME_COOKIE = "bible-theme";
+const PALETTE_COOKIE = "bible-palette";
+const MODE_COOKIE = "bible-mode";
 
 /**
- * Get the current theme from cookies.
+ * Get the current theme state from cookies.
  */
-export const getThemeServerFn = createServerFn().handler(
-  async () => (getCookie(THEME_COOKIE) || "sage") as Theme,
-);
+export const getThemeServerFn = createServerFn().handler(async () => ({
+  palette: (getCookie(PALETTE_COOKIE) || "sage") as ColorPalette,
+  mode: (getCookie(MODE_COOKIE) || "light") as Mode,
+}));
 
 /**
- * Set the theme in cookies.
+ * Set the color palette in cookies.
  */
-export const setThemeServerFn = createServerFn({ method: "POST" })
-  .inputValidator((data: Theme) => data)
-  .handler(async ({ data }) => setCookie(THEME_COOKIE, data));
+export const setPaletteServerFn = createServerFn({ method: "POST" })
+  .inputValidator((data: ColorPalette) => data)
+  .handler(async ({ data }) => setCookie(PALETTE_COOKIE, data));
+
+/**
+ * Set the mode (light/dark) in cookies.
+ */
+export const setModeServerFn = createServerFn({ method: "POST" })
+  .inputValidator((data: Mode) => data)
+  .handler(async ({ data }) => setCookie(MODE_COOKIE, data));

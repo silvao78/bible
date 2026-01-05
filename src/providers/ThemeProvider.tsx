@@ -1,14 +1,21 @@
 import { useRouter } from "@tanstack/react-router";
 import { createContext, use } from "react";
 
-import { setThemeServerFn, themes } from "@/server/functions/theme";
+import {
+  palettes,
+  setModeServerFn,
+  setPaletteServerFn,
+} from "@/server/functions/theme";
 
 import type { PropsWithChildren } from "react";
-import type { Theme } from "@/server/functions/theme";
+import type { ColorPalette, Mode, ThemeState } from "@/server/functions/theme";
 
 interface ThemeContextValue {
-  theme: Theme;
-  setTheme: (val: Theme) => void;
+  palette: ColorPalette;
+  mode: Mode;
+  setPalette: (val: ColorPalette) => void;
+  setMode: (val: Mode) => void;
+  toggleMode: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -19,16 +26,33 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 const ThemeProvider = ({
   children,
   theme,
-}: PropsWithChildren<{ theme: Theme }>) => {
+}: PropsWithChildren<{ theme: ThemeState }>) => {
   const router = useRouter();
 
-  const setTheme = (val: Theme) =>
-    setThemeServerFn({ data: val }).then(() => router.invalidate());
+  const setPalette = (val: ColorPalette) =>
+    setPaletteServerFn({ data: val }).then(() => router.invalidate());
 
-  return <ThemeContext value={{ theme, setTheme }}>{children}</ThemeContext>;
+  const setMode = (val: Mode) =>
+    setModeServerFn({ data: val }).then(() => router.invalidate());
+
+  const toggleMode = () => setMode(theme.mode === "light" ? "dark" : "light");
+
+  return (
+    <ThemeContext
+      value={{
+        palette: theme.palette,
+        mode: theme.mode,
+        setPalette,
+        setMode,
+        toggleMode,
+      }}
+    >
+      {children}
+    </ThemeContext>
+  );
 };
 
-export { themes };
+export { palettes };
 
 export const useTheme = () => {
   const val = use(ThemeContext);

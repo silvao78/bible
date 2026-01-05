@@ -133,8 +133,11 @@ function RootDocument({ children }: PropsWithChildren) {
     registerServiceWorker();
   }, []);
 
+  // Build class string: palette name + "dark" if dark mode
+  const themeClass = `${theme.palette}${theme.mode === "dark" ? " dark" : ""}`;
+
   return (
-    <html suppressHydrationWarning lang="en" className={theme}>
+    <html suppressHydrationWarning lang="en" className={themeClass}>
       <head>
         <HeadContent />
       </head>

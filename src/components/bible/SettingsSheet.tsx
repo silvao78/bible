@@ -31,10 +31,10 @@ import {
 import app from "@/lib/config/app.config";
 import { userPreferencesService } from "@/lib/userPreferences";
 import { cn } from "@/lib/utils";
-import { themes, useTheme } from "@/providers/ThemeProvider";
+import { palettes, useTheme } from "@/providers/ThemeProvider";
 
 import type { BibleVersion } from "@/lib/bibleApi";
-import type { Theme } from "@/server/functions/theme";
+import type { ColorPalette } from "@/server/functions/theme";
 
 const COLOR_PRESETS = [
   { name: "Classic Red", value: "#dc2626" },
@@ -47,10 +47,9 @@ const COLOR_PRESETS = [
   { name: "Blue", value: "#2563eb" },
 ];
 
-// Theme color swatches for visual selection (primary accent color)
-const THEME_COLORS: Record<Theme, string> = {
+// Palette color swatches for visual selection (primary accent color)
+const PALETTE_COLORS: Record<ColorPalette, string> = {
   sage: "#3d7a5c",
-  slate: "#4d9b7a",
   saguaro: "#3a7a52",
   canyon: "#d4694a",
   pinyon: "#3d7a4d",
@@ -85,7 +84,7 @@ const SettingsSheet = ({
   holyWordsColor,
   onHolyWordsColorChange,
 }: SettingsSheetProps) => {
-  const { theme, setTheme } = useTheme();
+  const { palette, setPalette } = useTheme();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -150,22 +149,25 @@ const SettingsSheet = ({
               Color Theme
             </span>
             <div className="flex flex-wrap gap-2">
-              {themes.map((t) => (
+              {palettes.map((p) => (
                 <button
-                  key={t.value}
+                  key={p.value}
                   type="button"
-                  onClick={() => setTheme(t.value as Theme)}
+                  onClick={() => setPalette(p.value)}
                   className={cn(
                     "h-8 w-8 cursor-pointer rounded-full border-2 transition-all hover:scale-110",
-                    theme === t.value
+                    palette === p.value
                       ? "border-foreground ring-2 ring-foreground ring-offset-2 ring-offset-background"
                       : "border-transparent",
                   )}
-                  style={{ backgroundColor: THEME_COLORS[t.value] }}
-                  title={t.label}
+                  style={{ backgroundColor: PALETTE_COLORS[p.value] }}
+                  title={p.label}
                 />
               ))}
             </div>
+            <p className="text-muted-foreground text-xs">
+              High desert and nature-inspired palettes.
+            </p>
           </div>
 
           <div className="border-border border-t pt-4">

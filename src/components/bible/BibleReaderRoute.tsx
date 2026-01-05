@@ -42,7 +42,7 @@ function BibleReaderRoute({
   psalmQuote,
 }: BibleReaderRouteProps) {
   const navigate = useNavigate();
-  const { toggleTheme } = useTheme();
+  const { toggleMode } = useTheme();
 
   // Use suspense queries for reactive data
   const { data: versions } = useSuspenseQuery(versionsOptions());
@@ -332,7 +332,7 @@ function BibleReaderRoute({
       {
         key: "t",
         description: "Toggle theme",
-        action: toggleTheme,
+        action: toggleMode,
       },
     ],
     [
@@ -342,7 +342,7 @@ function BibleReaderRoute({
       handleNextChapter,
       scrollUp,
       scrollDown,
-      toggleTheme,
+      toggleMode,
     ],
   );
 
