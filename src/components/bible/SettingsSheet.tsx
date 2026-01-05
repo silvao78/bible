@@ -54,6 +54,7 @@ const PALETTE_COLORS: Record<ColorPalette, string> = {
   mesa: "#e07830",
   juniper: "#3d8a7a",
   rose: "#e11d48",
+  custom: "#888888",
 };
 
 interface SettingsSheetProps {

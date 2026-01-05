@@ -47,7 +47,7 @@ const ReaderToolbar = ({
   holyWordsColor,
   onHolyWordsColorChange,
 }: ReaderToolbarProps) => (
-  <div className="mb-2 flex shrink-0 items-center justify-between gap-2 px-3 sm:mb-4 sm:px-0">
+  <div className="mb-2 flex shrink-0 items-center justify-between gap-2 px-2 pt-2 sm:mb-4 sm:py-0">
     <button
       type="button"
       onClick={onGoHome}
@@ -59,6 +59,7 @@ const ReaderToolbar = ({
         <h1 className="font-bold font-serif text-2xl text-foreground sm:text-4xl">
           {app.name}
         </h1>
+
         <p className="hidden font-serif text-muted-foreground text-sm italic sm:block">
           The Sacred Scriptures
         </p>

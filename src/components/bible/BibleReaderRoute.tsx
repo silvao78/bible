@@ -1,7 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 
 import {
   PsalmFooter,
@@ -9,11 +7,13 @@ import {
   ReaderToolbar,
   ReadingModeView,
 } from "@/components/bible";
-import { bibleApi } from "@/lib/bibleApi";
-import { bookmarksService } from "@/lib/bookmarks";
-import { onCollectionsReady } from "@/lib/db/collections";
-import { useHotkeys } from "@/lib/useHotkeys";
-import { userPreferencesService } from "@/lib/userPreferences";
+import {
+  useBibleHotkeys,
+  useBookmarks,
+  useChapterNavigation,
+  useReaderPreferences,
+  useScrollHandler,
+} from "@/lib/hooks";
 import {
   booksOptions,
   chapterOptions,
@@ -22,8 +22,7 @@ import {
 import { useTheme } from "@/providers/ThemeProvider";
 
 import type { PsalmQuote } from "@/data/psalmQuotes";
-import type { BibleBook, BibleVerse, BibleVersion } from "@/lib/bibleApi";
-import type { Hotkey } from "@/lib/useHotkeys";
+import type { BibleBook, BibleVersion } from "@/lib/bibleApi";
 
 export interface BibleReaderRouteProps {
   versionId: string;
@@ -42,8 +41,7 @@ function BibleReaderRoute({
   setReadingMode,
   psalmQuote,
 }: BibleReaderRouteProps) {
-  const navigate = useNavigate();
-  const { toggleMode } = useTheme();
+  const { toggleMode, footerVerseEnabled } = useTheme();
 
   // Use suspense queries for reactive data
   const { data: versions } = useSuspenseQuery(versionsOptions());
@@ -51,330 +49,67 @@ function BibleReaderRoute({
   const { data: verses } = useSuspenseQuery(
     chapterOptions(versionId, bookId, chapter),
   );
-  const { footerVerseEnabled } = useTheme();
-  const initialPrefs = useMemo(
-    () => userPreferencesService.getPreferences(),
-    [],
-  );
-  const [holyWordsEnabled, setHolyWordsEnabled] = useState(
-    initialPrefs.holyWordsEnabled,
-  );
-  const [holyWordsColor, setHolyWordsColor] = useState(
-    initialPrefs.holyWordsColor,
-  );
-  const [bookmarkedVerses, setBookmarkedVerses] = useState<Set<string>>(
-    new Set(),
-  );
-  const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(false);
-  const [bookmarksOpen, setBookmarksOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const isInitialLoadRef = useRef(true);
 
   const currentBook = books?.find((b: BibleBook) => b.id === bookId);
   const currentVersion = versions?.find(
     (v: BibleVersion) => v.id === versionId,
   );
 
-  // Reload preferences when collections become ready
-  useEffect(() => {
-    const loadPreferences = () => {
-      const preferences = userPreferencesService.getPreferences();
-      setHolyWordsEnabled(preferences.holyWordsEnabled);
-      setHolyWordsColor(preferences.holyWordsColor);
-    };
+  // UI state for sheets/dialogs
+  const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(false);
+  const [bookmarksOpen, setBookmarksOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
-    const unsubscribe = onCollectionsReady(() => {
-      loadPreferences();
-    });
-    return unsubscribe;
-  }, []);
+  // Custom hooks for separated concerns
+  const {
+    holyWordsEnabled,
+    setHolyWordsEnabled,
+    holyWordsColor,
+    setHolyWordsColor,
+  } = useReaderPreferences({ versionId, bookId, chapter });
 
-  // Preload adjacent chapters for faster navigation
-  useEffect(() => {
-    bibleApi.preloadAdjacentChapters(versionId, bookId, chapter);
-  }, [versionId, bookId, chapter]);
+  const { bookmarkedVerses, handleToggleBookmark } = useBookmarks({
+    versionId,
+    bookId,
+    chapter,
+    verses,
+  });
 
-  // Scroll handling
-  // biome-ignore lint/correctness/useExhaustiveDependencies: verses triggers scroll reset on chapter load
-  useEffect(() => {
-    const handleScroll = async () => {
-      if (!scrollContainerRef.current) return;
+  const {
+    navigateToChapter,
+    handlePreviousChapter,
+    handleNextChapter,
+    goHome,
+    hasPrevious,
+    hasNext,
+  } = useChapterNavigation({
+    versionId,
+    bookId,
+    chapter,
+    books,
+    currentBook,
+  });
 
-      if (isInitialLoadRef.current) {
-        const preferences = await userPreferencesService.getPreferences();
-        if (
-          preferences.scrollPosition &&
-          preferences.selectedBookId === bookId &&
-          preferences.selectedChapter === chapter
-        ) {
-          scrollContainerRef.current.scrollTop = preferences.scrollPosition;
-        } else {
-          scrollContainerRef.current.scrollTop = 0;
-        }
-        isInitialLoadRef.current = false;
-      } else {
-        scrollContainerRef.current.scrollTop = 0;
-      }
-    };
-    handleScroll();
-  }, [bookId, chapter, verses]);
+  const { scrollContainerRef, scrollUp, scrollDown } = useScrollHandler({
+    bookId,
+    chapter,
+    verses,
+    handlePreviousChapter,
+    handleNextChapter,
+  });
 
-  // Save scroll position on scroll
-  useEffect(() => {
-    const saveScroll = () => {
-      if (scrollContainerRef.current) {
-        userPreferencesService.savePreferences({
-          scrollPosition: scrollContainerRef.current.scrollTop,
-        });
-      }
-    };
-
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener("scroll", saveScroll);
-      return () => container.removeEventListener("scroll", saveScroll);
-    }
-  }, []);
-
-  // Save preferences when state changes
-  useEffect(() => {
-    userPreferencesService.savePreferences({
-      selectedVersionId: versionId,
-      selectedBookId: bookId,
-      selectedChapter: chapter,
-      holyWordsEnabled,
-      holyWordsColor,
-    });
-  }, [versionId, bookId, chapter, holyWordsEnabled, holyWordsColor]);
-
-  // Load bookmarks for current chapter
-  useEffect(() => {
-    const loadBookmarks = async () => {
-      if (versionId && bookId && verses) {
-        const bookmarked = new Set<string>();
-        for (const verse of verses) {
-          const isBookmarked = await bookmarksService.isBookmarked(
-            versionId,
-            bookId,
-            chapter,
-            verse.verse,
-          );
-          if (isBookmarked) {
-            bookmarked.add(`${bookId}-${chapter}-${verse.verse}`);
-          }
-        }
-        setBookmarkedVerses(bookmarked);
-      }
-    };
-    loadBookmarks();
-
-    // Re-load when collections become ready (handles initial page load race)
-    const unsubscribe = onCollectionsReady(() => {
-      loadBookmarks();
-    });
-    return unsubscribe;
-  }, [versionId, bookId, chapter, verses]);
-
-  const handleToggleBookmark = async (verse: BibleVerse) => {
-    if (!versionId || !bookId) return;
-
-    const key = `${bookId}-${chapter}-${verse.verse}`;
-    const isCurrentlyBookmarked = bookmarkedVerses.has(key);
-
-    try {
-      if (isCurrentlyBookmarked) {
-        const bookmark = await bookmarksService.getBookmark(
-          versionId,
-          bookId,
-          chapter,
-          verse.verse,
-        );
-        if (bookmark) {
-          await bookmarksService.deleteBookmark(bookmark.id);
-          setBookmarkedVerses((prev) => {
-            const next = new Set(prev);
-            next.delete(key);
-            return next;
-          });
-          toast.success("Bookmark removed");
-        }
-      } else {
-        await bookmarksService.addBookmark(
-          versionId,
-          bookId,
-          chapter,
-          verse.verse,
-        );
-        setBookmarkedVerses((prev) => new Set(prev).add(key));
-        toast.success("Verse bookmarked");
-      }
-    } catch (error) {
-      toast.error("Failed to update bookmark");
-      console.error(error);
-    }
-  };
-
-  const navigateToChapter = useCallback(
-    (newVersion: string, newBook: number, newChapter: number) => {
-      navigate({
-        to: "/$version/$book/$chapter",
-        params: {
-          version: newVersion,
-          book: String(newBook),
-          chapter: String(newChapter),
-        },
-        search: (prev) => prev,
-      });
-    },
-    [navigate],
-  );
-
-  const handlePreviousChapter = useCallback(() => {
-    if (chapter > 1) {
-      navigateToChapter(versionId, bookId, chapter - 1);
-    } else if (currentBook && books) {
-      const currentIndex = books.findIndex((b: BibleBook) => b.id === bookId);
-      if (currentIndex > 0) {
-        const prevBook = books[currentIndex - 1];
-        navigateToChapter(versionId, prevBook.id, prevBook.chapters);
-      }
-    }
-  }, [chapter, currentBook, books, bookId, versionId, navigateToChapter]);
-
-  const handleNextChapter = useCallback(() => {
-    if (currentBook && chapter < currentBook.chapters) {
-      navigateToChapter(versionId, bookId, chapter + 1);
-    } else if (books) {
-      const currentIndex = books.findIndex((b: BibleBook) => b.id === bookId);
-      if (currentIndex < books.length - 1) {
-        const nextBook = books[currentIndex + 1];
-        navigateToChapter(versionId, nextBook.id, 1);
-      }
-    }
-  }, [currentBook, chapter, books, bookId, versionId, navigateToChapter]);
-
-  const toggleReadingMode = useCallback(() => {
-    setReadingMode((prev) => !prev);
-  }, [setReadingMode]);
-
-  const goHome = useCallback(() => {
-    navigateToChapter(versionId, 1, 1);
-  }, [versionId, navigateToChapter]);
-
-  const SCROLL_AMOUNT = 200;
-
-  const scrollUp = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    if (container.scrollTop <= 0) {
-      handlePreviousChapter();
-    } else {
-      container.scrollTop -= SCROLL_AMOUNT;
-    }
-  }, [handlePreviousChapter]);
-
-  const scrollDown = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const isAtBottom =
-      container.scrollTop + container.clientHeight >=
-      container.scrollHeight - 1;
-
-    if (isAtBottom) {
-      handleNextChapter();
-    } else {
-      container.scrollTop += SCROLL_AMOUNT;
-    }
-  }, [handleNextChapter]);
-
-  const exitFullscreen = useCallback(() => {
-    if (readingMode) {
-      setReadingMode(false);
-    }
-  }, [readingMode, setReadingMode]);
-
-  const hotkeys: Hotkey[] = useMemo(
-    () => [
-      {
-        key: "f",
-        description: "Toggle fullscreen reading mode",
-        action: toggleReadingMode,
-      },
-      {
-        key: "Escape",
-        description: "Exit fullscreen mode",
-        action: exitFullscreen,
-      },
-      {
-        key: "ArrowLeft",
-        description: "Previous chapter",
-        action: handlePreviousChapter,
-      },
-      {
-        key: "ArrowRight",
-        description: "Next chapter",
-        action: handleNextChapter,
-      },
-      { key: "ArrowUp", description: "Scroll up", action: scrollUp },
-      { key: "ArrowDown", description: "Scroll down", action: scrollDown },
-      { key: "w", description: "Scroll up", action: scrollUp },
-      { key: "s", description: "Scroll down", action: scrollDown },
-      {
-        key: "a",
-        description: "Previous chapter",
-        action: handlePreviousChapter,
-      },
-      { key: "d", description: "Next chapter", action: handleNextChapter },
-      {
-        key: "?",
-        description: "Show keyboard shortcuts",
-        action: () => setHotkeyHelpOpen(true),
-        modifiers: { shift: true },
-      },
-      {
-        key: "/",
-        description: "Show keyboard shortcuts",
-        action: () => setHotkeyHelpOpen(true),
-      },
-      {
-        key: "b",
-        description: "Toggle bookmarks",
-        action: () => setBookmarksOpen((prev) => !prev),
-      },
-      {
-        key: "o",
-        description: "Toggle settings",
-        action: () => setSettingsOpen((prev) => !prev),
-      },
-      {
-        key: "t",
-        description: "Toggle theme",
-        action: toggleMode,
-      },
-    ],
-    [
-      toggleReadingMode,
-      exitFullscreen,
-      handlePreviousChapter,
-      handleNextChapter,
-      scrollUp,
-      scrollDown,
-      toggleMode,
-    ],
-  );
-
-  useHotkeys(hotkeys);
-
-  const hasPrevious =
-    chapter > 1 ||
-    (books?.findIndex((b: BibleBook) => b.id === bookId) || 0) > 0;
-  const hasNext =
-    (currentBook && chapter < currentBook.chapters) ||
-    (books &&
-      books.findIndex((b: BibleBook) => b.id === bookId) < books.length - 1);
+  useBibleHotkeys({
+    readingMode,
+    setReadingMode,
+    handlePreviousChapter,
+    handleNextChapter,
+    scrollUp,
+    scrollDown,
+    toggleMode,
+    setHotkeyHelpOpen,
+    setBookmarksOpen,
+    setSettingsOpen,
+  });
 
   return (
     <>
@@ -389,7 +124,7 @@ function BibleReaderRoute({
         selectedBookId={bookId ?? 0}
         totalChapters={currentBook?.chapters ?? 0}
         hasPrevious={hasPrevious}
-        hasNext={hasNext ?? false}
+        hasNext={hasNext}
         holyWordsEnabled={holyWordsEnabled}
         holyWordsColor={holyWordsColor}
         scrollContainerRef={scrollContainerRef}
@@ -399,7 +134,7 @@ function BibleReaderRoute({
         onToggleBookmark={handleToggleBookmark}
       />
       <div
-        className={`flex h-full flex-col bg-background px-0 pt-3 sm:p-4 md:p-6 ${footerVerseEnabled ? "pb-3 sm:pb-4 md:pb-6" : "pb-0"}`}
+        className={`flex h-full flex-col bg-background sm:p-4 md:p-6 ${footerVerseEnabled ? "pb-3 sm:pb-4 md:pb-6" : "pb-0"}`}
       >
         <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden">
           <ReaderToolbar
@@ -447,7 +182,7 @@ function BibleReaderRoute({
             onToggleBookmark={handleToggleBookmark}
             totalChapters={currentBook?.chapters || 0}
             hasPrevious={hasPrevious}
-            hasNext={hasNext ?? false}
+            hasNext={hasNext}
             onPrevious={handlePreviousChapter}
             onNext={handleNextChapter}
             scrollContainerRef={scrollContainerRef}
